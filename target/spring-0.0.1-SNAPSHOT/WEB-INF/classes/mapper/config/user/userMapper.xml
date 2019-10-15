@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.boot.mapper.UserMapper">
+	<!-- 查找全部 -->
+	<select id="findAll" resultType="com.boot.bean.BmsUser">
+		select * from bms_user
+	</select>
+
+	<!--1 根据id查询实体信息 使用别名解决数据库字段和实体类字段不一致问题 -->
+	<select id="findById" parameterType="java.lang.String"
+		resultType="com.boot.bean.BmsUser">
+		select t.id , t.locationid , t.user_sex as userSex
+		,t.user_real_name as userRealName ,t.user_mobile as userMobile
+		from
+		bms_user t where id = #{id}
+	</select>
+
+	<!--2 resultMap 解决数据库字段和实体类字段命名不一致问题 统一映射 -->
+	<resultMap type="com.boot.bean.BmsUser" id="BmsResultUser">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="user_sex" jdbcType="VARCHAR" property="userSex" />
+		<result column="user_real_name" jdbcType="VARCHAR" property="userRealName" />
+		<result column="locationid" jdbcType="VARCHAR" property="locationid" />
+		<result column="user_mobile" jdbcType="VARCHAR" property="userMobile" />
+	</resultMap>
+
+	<!-- 根据id查询实体信息 采用resultMap解决不一致问题 -->
+	<select id="findByName" parameterType="java.lang.String"
+		resultMap="BmsResultUser">
+		select * from bms_user t where t.user_real_name =
+		#{userRealName}
+	</select>
+
+	<!--3 插入数据 -->
+	<insert id="insertUser" keyProperty="id" useGeneratedKeys="true"
+		parameterType="com.boot.bean.BmsUser">
+		insert into bms_user(ID,LOCATIONID,USER_REAL_NAME,USER_MOBILE)
+		values(sys_guid(),#{locationid},#{userRealName},#{userMobile})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="updatetUser" parameterType="com.boot.bean.BmsUser">
+		update bms_user
+		set bms_status = #{bmsStatus}
+		where id = #{id}
+	</update>
+
+
+</mapper>
